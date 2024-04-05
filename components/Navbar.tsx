@@ -1,32 +1,14 @@
-'use client'
-
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import AuthProvider from './AuthProviders'
 import { NavLinks } from '@/constants'
-import { auth } from '@/firebase/firebase.config';
-import { getCurrentUser } from '@/lib/firebase/auth';
 import ProfileMenu from './ProfileMenu'
+import { IUser } from '@/models/types'
+import AuthProvider from './AuthProviders'
+import { getCurrentUser } from '@/lib/session'
 
-interface User {
-  uid: string;
-  email: string;
-  displayName?: string;
-  photoURL?: string;
-}
-
-const Navbar = () => {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      let currentUser = await getCurrentUser()
-
-      setUser(currentUser)
-    }
-    fetchCurrentUser()
-  }, []);
+const Navbar = async () => {
+  const session = await getCurrentUser()
 
   return (
     <nav className='flexBetween navbar'>
@@ -49,13 +31,14 @@ const Navbar = () => {
       </div>
 
       <div className='flexCenter gap-4'>
-        {
-          user ? (
-            <ProfileMenu session={user} />
-          ) : (
-            <AuthProvider />
-          )
-        }
+        {session ? (
+          <>
+            <ProfileMenu session={session} />
+            <Link href='/create-project'>Share Work</Link>
+          </>
+        ) : (
+          <AuthProvider />
+        )}
       </div>
     </nav>
   )

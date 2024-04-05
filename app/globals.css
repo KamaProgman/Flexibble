@@ -130,12 +130,13 @@ body {
 
 /* Navbar */
 .navbar {
-	@apply py-5 px-8 border-b border-nav-border gap-4;
+	@apply h-[72px] px-8 border-b border-nav-border gap-4;
 }
 
 /* Profile Menu */
 .profile_menu-items {
-	@apply flex-col absolute right-1/2 translate-x-1/2 mt-3 p-7 sm:min-w-[300px] min-w-max rounded-xl bg-white border border-nav-border shadow-menu;
+	@apply flex-col absolute -right-4 mt-2 p-7 sm:min-w-[300px] min-w-max rounded-xl bg-white border border-nav-border shadow-menu;
+	box-shadow: 0 0 7px 1px #e2e2e2;
 }
 
 /* Profile Card */
@@ -149,7 +150,7 @@ body {
 }
 
 .form_image-container {
-	@apply w-full lg:min-h-[400px] min-h-[200px] relative;
+	@apply w-full lg:min-h-[300px] min-h-[200px] relative;
 }
 
 .form_image-label {

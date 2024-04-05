@@ -1,6 +1,7 @@
-'use client'
+"use client"
 
-import { signInWithGoogle } from "@/lib/firebase/auth"
+import { signInWithGoogle } from "@/lib/auth";
+import { signIn } from "next-auth/react";
 
 export const AuthProvider = () => {
   const handleSignInWithGoogle = async () => {
@@ -16,7 +17,7 @@ export const AuthProvider = () => {
 
   return (
     <>
-      <button onClick={handleSignInWithGoogle}>Sign In</button>
+      <button onClick={() => signIn('google')}>Sign In</button>
     </>
   )
 }

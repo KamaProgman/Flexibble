@@ -11,14 +11,16 @@
   "dependencies": {
     "@firebase/firestore": "^4.4.3",
     "@headlessui/react": "^1.7.18",
+    "@next-auth/firebase-adapter": "^2.0.1",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/next-auth": "^3.15.0",
     "cloudinary": "^2.0.1",
     "firebase": "^10.8.1",
+    "firebase-admin": "^11.4.1",
     "graphql-request": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "next": "14.1.0",
-    "next-auth": "^4.24.6",
+    "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18"
   },
