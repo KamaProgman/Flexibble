@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }: { user: AdapterUser | User }) {
       try {
 
-        await createUserWithEmailAndPassword(auth, user.email as string, 'asd')
+        // await createUserWithEmailAndPassword(auth, user.email as string, 'asd')
 
         await createUser(user)
         return true
