@@ -1,12 +1,9 @@
 import { NextAuthOptions, User, getServerSession } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
-import NextAuth from "next-auth"
-import { auth, db } from "@/firebase/firebase.config";
-
-import { FirestoreAdapter } from "@next-auth/firebase-adapter";
-import { cert } from "firebase-admin/app";
-import { serviceAccount } from "@/firebase/admin.config";
+import { auth, createUser, getUser } from "@/firebase/firebase.config";
+import { UserProfile, createUserWithEmailAndPassword } from "firebase/auth";
+import { SessionInterface } from "@/common.types";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,29 +12,49 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     })
   ],
-  // callbacks: {
-  //   async signIn({ user }: { user: AdapterUser | User }) {
-  //     try {
+  callbacks: {
+    async signIn({ user }: { user: AdapterUser | User }) {
+      try {
 
-  //       return true
-  //     } catch (error: any) {
-  //       console.log(console.log(error));
-  //       return false
-  //     }
-  //   },
-  //   async session({ session }) {
-  //     return session
-  //   },
-  // }
+        await createUserWithEmailAndPassword(auth, user.email as string, 'asd')
+
+        await createUser(user)
+        return true
+      } catch (error) {
+        return false
+      }
+    },
+    async session({ session }) {
+      try {
+        if (session.user?.email) {
+          const userData = await getUser(session.user.email) as UserProfile
+          session.user = {
+            ...session.user,
+            ...userData,
+          };
+        }
+        return session;
+      } catch (error) {
+        throw error;
+      }
+    }
+  }
 }
 
 export async function getCurrentUser() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as SessionInterface;
 
   return session;
 }
 
-export const signOut = async (): Promise<void> => {
-  await auth.signOut();
-  window.location.reload()
-};
+// if (user.email) {
+//   const userData = await getUser(user.email) as UserProfile;
+
+//   // if (!userData) {
+//   //   await createUser({
+//   //     name: user.name,
+//   //     email: user.email,
+//   //     image: user.image
+//   //   });
+//   // }
+// }

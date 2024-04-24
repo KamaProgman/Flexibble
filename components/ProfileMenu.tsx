@@ -4,12 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
-// import { signOut } from "@/lib/session";
-import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
+import { SessionInterface } from "@/common.types";
 
 interface props {
-  session: Session
+  session: SessionInterface
 }
 
 const ProfileMenu: React.FC<props> = ({ session }) => {
@@ -58,17 +57,17 @@ const ProfileMenu: React.FC<props> = ({ session }) => {
               <p className="font-semibold">{session?.user?.name}</p>
             </div>
 
-            {/* <div className="flex flex-col gap-3 pt-10 items-start w-full">
+            <div className="flex flex-col gap-3 pt-10 items-start w-full">
               <Menu.Item>
-                <Link href={`/profile/${session?.uid}`} className="text-sm">Work Preferences</Link>
+                <Link href={`/profile/${session?.user?.uid}`} className="text-sm">Work Preferences</Link>
               </Menu.Item>
               <Menu.Item>
-                <Link href={`/profile/${session?.uid}`} className="text-sm">Settings</Link>
+                <Link href={`/profile/${session?.user?.uid}`} className="text-sm">Settings</Link>
               </Menu.Item>
               <Menu.Item>
-                <Link href={`/profile/${session?.uid}`} className="text-sm">Profile</Link>
+                <Link href={`/profile/${session?.user?.uid}`} className="text-sm">Profile</Link>
               </Menu.Item>
-            </div> */}
+            </div>
             <div className="w-full flexStart border-t border-nav-border mt-5 pt-5">
               <Menu.Item>
                 <button type="button" className="text-sm" onClick={() => signOut()}>

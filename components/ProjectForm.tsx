@@ -1,9 +1,13 @@
 'use client'
 
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { Session, User } from 'next-auth';
 import Image from 'next/image';
 import FormField from './FormField';
+import { categoryFilters } from '@/constants';
+import CustomMenu from './CustomMenu';
+import { FormState } from '@/common.types';
+import Button from './Button';
 
 interface props {
   type: string;
@@ -11,14 +15,53 @@ interface props {
 }
 
 const ProjectForm: React.FC<props> = ({ type, session }) => {
-
-  const handleFormSubmit = (e: React.FormEvent) => { }
-  const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => { }
-  const handleStateChange = (fieldName: string, value: string) => { }
-
-  const form = {
+  const [form, setForm] = useState<FormState>({
+    title: '',
+    description: '',
     image: '',
-    title: ''
+    liveSiteUrl: '',
+    githubUrl: '',
+    category: '',
+
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleStateChange = (fieldName: string, value: string) => {
+    setForm((prevState) => ({ ...prevState, [fieldName]: value }))
+  }
+
+  const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+
+    const file = e.target.files?.[0]
+
+    if (!file) return;
+    if (!file.type.includes('image')) {
+      alert('Please upload an image file')
+    }
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file)
+
+    reader.onload = () => {
+      const result = reader.result as string
+      handleStateChange('image', result)
+    }
+  }
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    setIsSubmitting(true)
+
+    try {
+      if (type === 'create') {
+        // create project
+      }
+    } catch (error) {
+
+    }
   }
 
   return (
@@ -52,6 +95,39 @@ const ProjectForm: React.FC<props> = ({ type, session }) => {
         placeholder="Flexibble"
         setState={(value) => handleStateChange('title', value)}
       />
+      <FormField
+        title="Description"
+        state={form.description}
+        placeholder="Showcase and discover remarkable developer projects."
+        setState={(value) => handleStateChange('description', value)}
+      />
+      <FormField
+        type='url'
+        title="GitHub URL"
+        state={form.githubUrl}
+        placeholder="https://github.com/KamaProgman"
+        setState={(value) => handleStateChange('githubUrl', value)}
+      />
+
+      <CustomMenu
+        title="Category"
+        state={form.category}
+        filters={categoryFilters}
+        setState={(value) => handleStateChange('category', value)}
+      />
+
+      <div className='flexStart w-full'>
+        <Button
+          title={
+            isSubmitting
+              ? `${type === 'create' ? 'Creating' : 'Editing'}`
+              : `${type === 'create' ? 'Create' : 'Edit'}`}
+          type="submit"
+          leftIcon={isSubmitting ? "" : "/plus.svg"}
+          isSubmitting={isSubmitting}
+        />
+      </div>
+
     </form>
   )
 }

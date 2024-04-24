@@ -46,10 +46,10 @@ export interface UserProfile {
 
 export interface SessionInterface extends Session {
 	user: User & {
-		id: string;
-		name: string;
-		email: string;
-		avatarUrl: string;
+		name: string | null | undefined;
+		email: string | null | undefined;
+		image: string | null | undefined;
+		uid: string | null | undefined;
 	};
 }
 
