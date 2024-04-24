@@ -35,7 +35,7 @@ const CustomMenu: React.FC<props> = ({ title, state, filters, setState }) => {
                 type='button'
                 value={tag}
                 className='custom_menu-item'
-                onClick={(e) => setState(e.currentTarget)}
+                onClick={(e) => setState(e.currentTarget.value)}
               >
                 {tag}
               </button>
