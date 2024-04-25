@@ -1,8 +1,6 @@
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/session'
 
 export const metadata = {
   title: 'Flexibble',
@@ -14,11 +12,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-
-  const session = await getServerSession(authOptions)
-
-  console.log(session);
-
 
   return (
     <html lang="en">

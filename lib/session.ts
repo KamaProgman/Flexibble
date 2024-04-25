@@ -1,9 +1,8 @@
 import { NextAuthOptions, User, getServerSession } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
-import { auth, createUser, getUser } from "@/firebase/firebase.config";
-import { UserProfile, createUserWithEmailAndPassword } from "firebase/auth";
 import { SessionInterface } from "@/common.types";
+import { createUser, getUser } from "./actions";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,24 +14,27 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user }: { user: AdapterUser | User }) {
       try {
-
-        // await createUserWithEmailAndPassword(auth, user.email as string, 'asd')
-
-        await createUser(user)
-        return true
+        const userExists = await getUser(user.email as string)
+        if (!userExists) {
+          await createUser(user)
+          return true
+        } else {
+          return true
+        }
       } catch (error) {
         return false
       }
     },
     async session({ session }) {
+      const email = session.user?.email
       try {
-        if (session.user?.email) {
-          const userData = await getUser(session.user.email) as UserProfile
-          session.user = {
-            ...session.user,
-            ...userData,
-          };
+        const userData = await getUser(email as string)
+
+        session = {
+          ...session,
+          user: userData
         }
+
         return session;
       } catch (error) {
         throw error;
@@ -46,15 +48,3 @@ export async function getCurrentUser() {
 
   return session;
 }
-
-// if (user.email) {
-//   const userData = await getUser(user.email) as UserProfile;
-
-//   // if (!userData) {
-//   //   await createUser({
-//   //     name: user.name,
-//   //     email: user.email,
-//   //     image: user.image
-//   //   });
-//   // }
-// }
