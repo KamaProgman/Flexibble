@@ -23,9 +23,6 @@ const Modal: React.FC<props> = ({ children }) => {
     }
   }, [onDismiss, overlay])
 
-  console.log(overlay);
-  
-
   return (
     <div ref={overlay} className="modal" onClick={handleClick}>
       <button type="button" onClick={onDismiss} className="absolute top-4 right-8">

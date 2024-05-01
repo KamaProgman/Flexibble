@@ -3,7 +3,8 @@ import { User, Session } from "next-auth";
 export type FormState = {
 	title: string;
 	description: string;
-	image: string;
+	image: File | null;
+	imageUrl?: string;
 	liveSiteUrl: string;
 	githubUrl: string;
 	category: string;
@@ -49,14 +50,14 @@ export interface SessionInterface extends Session {
 		name: string | null | undefined;
 		email: string | null | undefined;
 		image: string | null | undefined;
-		uid: string | null | undefined;
+		id: string | null | undefined;
 	};
 }
 
 export interface ProjectForm {
 	title: string;
 	description: string;
-	image: string;
+	image: File | null;
 	liveSiteUrl: string;
 	githubUrl: string;
 	category: string;

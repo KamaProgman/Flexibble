@@ -1,75 +1,76 @@
 'use client'
 
 import React, { ChangeEvent, useState } from 'react'
-import { Session, User } from 'next-auth';
+import { Session } from 'next-auth';
 import Image from 'next/image';
 import FormField from './FormField';
 import { categoryFilters } from '@/constants';
 import CustomMenu from './CustomMenu';
-import { FormState } from '@/common.types';
+import { FormState, SessionInterface } from '@/common.types';
 import Button from './Button';
+import { createNewProject } from '@/lib/actions';
+import { useRouter } from 'next/navigation';
+
 
 interface props {
   type: string;
-  session: Session | null;
+  session: SessionInterface;
 }
 
 const ProjectForm: React.FC<props> = ({ type, session }) => {
+  const router = useRouter()
   const [form, setForm] = useState<FormState>({
     title: '',
     description: '',
-    image: '',
+    image: null,
     liveSiteUrl: '',
     githubUrl: '',
     category: '',
-
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleStateChange = (fieldName: string, value: string) => {
+  const handleStateChange = (fieldName: string, value: string | File) => {
     setForm((prevState) => ({ ...prevState, [fieldName]: value }))
   }
 
   const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-
     const file = e.target.files?.[0]
-
     if (!file) return;
     if (!file.type.includes('image')) {
       alert('Please upload an image file')
+      return
     }
-
     const reader = new FileReader();
-
-    reader.readAsDataURL(file)
-
+    reader.readAsDataURL(file);
     reader.onload = () => {
-      const result = reader.result as string
-      handleStateChange('image', result)
-    }
+      const result = reader.result as string;
+      setForm((prevState) => ({ ...prevState, image: file, imageUrl: result }))
+    };
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     setIsSubmitting(true)
 
     try {
-      if (type === 'create') {
+      if (form.image && type === 'create') {
+        await createNewProject(form, session?.user.id)
         // create project
+        router.push('/')
       }
     } catch (error) {
-
+      console.log(error);
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
     <form onSubmit={handleFormSubmit} className='flexStart form'>
-
       <div className='flexStart form_image-container'>
         <label htmlFor="poster" className='flexCenter form_image-label'>
-          {!form.image && 'Choose a poster for your project'}
+          {!form.imageUrl && 'Choose a poster for your project'}
         </label>
         <input
           type="file"
@@ -79,9 +80,9 @@ const ProjectForm: React.FC<props> = ({ type, session }) => {
           className='form_image-input'
           onChange={handleChangeImage} />
 
-        {form.image && (
+        {form.imageUrl && (
           <Image
-            src={form?.image}
+            src={form?.imageUrl}
             className='sm:p-10 object-contain z-20'
             alt='Project poster'
             fill
@@ -103,12 +104,18 @@ const ProjectForm: React.FC<props> = ({ type, session }) => {
       />
       <FormField
         type='url'
+        title="Website URL"
+        state={form.liveSiteUrl}
+        placeholder="https://github.com/KamaProgman"
+        setState={(value) => handleStateChange('liveSiteUrl', value)}
+      />
+      <FormField
+        type='url'
         title="GitHub URL"
         state={form.githubUrl}
         placeholder="https://github.com/KamaProgman"
         setState={(value) => handleStateChange('githubUrl', value)}
       />
-
       <CustomMenu
         title="Category"
         state={form.category}
