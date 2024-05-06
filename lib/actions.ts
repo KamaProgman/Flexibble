@@ -1,40 +1,36 @@
-import { ProjectForm } from "@/common.types"
+import { ProjectForm, ProjectInterface } from "@/common.types"
 import { db, storage } from "@/firebase/firebase.config"
-import { getDownloadURL, ref, uploadBytes, uploadString } from 'firebase/storage';
-import { addDoc, collection, getDocs, query, where } from "@firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where } from "@firebase/firestore";
 import { User } from "next-auth";
 
+const serverUrl = 'http://localhost:3000';
 
-export const uploadImage = async (imageFile: File) => {
+export const fetchToken = async () => {
   try {
-    const imageRef = ref(storage, `images/${imageFile.name}`)
-    await uploadBytes(imageRef, imageFile)
-    const downloadURL = await getDownloadURL(imageRef)
+    const response = await fetch(`${serverUrl}/api/auth/token`);
 
-    return downloadURL;
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    throw error;
+    return response.json();
+  } catch (err) {
+    throw err;
   }
-}
-export const createNewProject = async (form: ProjectForm, creatorId: string) => {
+};
+
+export async function getCollection<T>(collectioName: string) {
+  let arr: T[] = []
   try {
-    if (form.image) {
-      const imageUrl = await uploadImage(form.image);
+    let ref = query(collection(db, collectioName))
+    const snapshot = await getDocs(ref)
 
-      const { image, ...formDataWithoutImage } = form;
+    snapshot.forEach((doc) => {
+      arr.push({
+        id: doc.id,
+        ...doc.data()
+      } as T)
+    })
 
-      let projectsRef = collection(db, 'projects');
-      const newProjectRef = await addDoc(projectsRef, {
-        ...formDataWithoutImage,
-        creatorId: creatorId,
-        imageUrl: imageUrl
-      });
-
-      console.log('Project created successfully!', newProjectRef.id);
-    }
+    return arr
   } catch (error) {
-    console.error('Error creating project:', error);
     throw error;
   }
 }
@@ -44,7 +40,6 @@ export const getUser = async (email: string) => {
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("email", "==", email))
     const snapshot = await getDocs(q)
-
     let user;
 
     snapshot.forEach((doc) => {
@@ -57,7 +52,6 @@ export const getUser = async (email: string) => {
     throw error;
   }
 };
-
 export const createUser = async (user: User) => {
   try {
     const usersCollectionRef = collection(db, "users");
@@ -73,5 +67,83 @@ export const createUser = async (user: User) => {
     true
   } catch (error) {
     console.error('Error creating user:', error);
+  }
+}
+export const uploadImage = async (imageFile: File) => {
+  try {
+    const imageRef = ref(storage, `images/${imageFile.name}`)
+    await uploadBytes(imageRef, imageFile)
+    const downloadURL = await getDownloadURL(imageRef)
+
+    return downloadURL;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+}
+export const createNewProject = async (form: ProjectForm, user: User) => {
+  try {
+    if (form.image) {
+      const imageUrl = await uploadImage(form.image);
+      const { image, ...formDataWithoutImage } = form;
+
+      let projectsRef = collection(db, 'projects');
+      const newProjectRef = await addDoc(projectsRef, {
+        ...formDataWithoutImage,
+        imageUrl: imageUrl,
+        createdBy: {
+          name: user.name,
+          email: user.email,
+          avatarUrl: user.image,
+          id: user.id,
+        }
+      });
+      console.log('Project created successfully!', newProjectRef.id);
+    }
+  } catch (error) {
+    console.error('Error creating project:', error);
+    throw error;
+  }
+}
+export const getProjectDetails = async (id: string) => {
+  try {
+    const docRef = doc(db, "projects", id);
+    const snapshot = await getDoc(docRef);
+
+    if (snapshot.exists()) {
+      return { id, ...snapshot.data() }
+    } else {
+      console.log('No such document!');
+      return null
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const getUserProjects = async (userId: string) => {
+  try {
+    const ref = collection(db, 'projects')
+    const q = query(ref, where(`createdBy.id`, "==", userId))
+    const snapshot = await getDocs(q)
+    const projects = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }) as ProjectInterface)
+
+    return projects
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const deleteProject = async (id: string, token: string) => {
+  try {
+    const ref = doc(db, 'projects', id)
+    await deleteDoc(ref)
+
+    console.log('Project deleted successfully:', id);
+  } catch (error) {
+    throw error;
   }
 }

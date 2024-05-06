@@ -13,11 +13,12 @@ export type FormState = {
 export interface ProjectInterface {
 	title: string;
 	description: string;
-	image: string;
+	imageUrl: string;
 	liveSiteUrl: string;
 	githubUrl: string;
 	category: string;
 	id: string;
+	creatorId: string
 	createdBy: {
 		name: string;
 		email: string;
