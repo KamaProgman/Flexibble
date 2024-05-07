@@ -11,7 +11,6 @@ const Home = async () => {
     return (
       <div className="flexStart flex-col paddings">
         Categories
-
         <p className="no-result-text text-center">No projects found, go create some</p>
       </div>
     )

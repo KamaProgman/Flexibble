@@ -55,8 +55,8 @@ const ProjectForm: React.FC<props> = ({ type, session }) => {
 
     try {
       if (form.image && type === 'create') {
-        await createNewProject(form, session.user)
         // create project
+        await createNewProject(form, session.user)
         router.push('/')
       }
     } catch (error) {
