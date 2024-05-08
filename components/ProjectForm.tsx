@@ -6,26 +6,28 @@ import Image from 'next/image';
 import FormField from './FormField';
 import { categoryFilters } from '@/constants';
 import CustomMenu from './CustomMenu';
-import { FormState, SessionInterface } from '@/common.types';
+import { FormState, ProjectInterface, SessionInterface } from '@/common.types';
 import Button from './Button';
-import { createNewProject } from '@/lib/actions';
+import { createNewProject, updateProject } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 
 
 interface props {
   type: string;
   session: SessionInterface;
+  project?: ProjectInterface
 }
 
-const ProjectForm: React.FC<props> = ({ type, session }) => {
+const ProjectForm: React.FC<props> = ({ type, session, project }) => {
   const router = useRouter()
   const [form, setForm] = useState<FormState>({
-    title: '',
-    description: '',
+    title: project?.title || '',
+    description: project?.description || '',
     image: null,
-    liveSiteUrl: '',
-    githubUrl: '',
-    category: '',
+    imageUrl: project?.imageUrl || '',
+    liveSiteUrl: project?.liveSiteUrl || '',
+    githubUrl: project?.githubUrl || '',
+    category: project?.category || '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,10 +56,14 @@ const ProjectForm: React.FC<props> = ({ type, session }) => {
     setIsSubmitting(true)
 
     try {
-      if (form.image && type === 'create') {
-        // create project
+      if (type === 'create') {
+        // create project 
         await createNewProject(form, session.user)
         router.push('/')
+      }
+        // edit project 
+      if (project && type === "edit") {
+        await updateProject(project?.id, form)
       }
     } catch (error) {
       console.log(error);

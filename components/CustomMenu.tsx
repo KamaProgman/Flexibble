@@ -21,7 +21,7 @@ const CustomMenu: React.FC<props> = ({ title, state, filters, setState }) => {
             {state || 'Select a category'}
 
             <Image
-              src="./arrow-down.svg"
+              src="/arrow-down.svg"
               width={10}
               height={5}
               alt='Arrow down' />

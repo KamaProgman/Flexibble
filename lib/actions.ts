@@ -1,7 +1,7 @@
 import { ProjectForm, ProjectInterface } from "@/common.types"
 import { db, storage } from "@/firebase/firebase.config"
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where } from "@firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where, updateDoc } from "@firebase/firestore";
 import { User } from "next-auth";
 
 const serverUrl = 'http://localhost:3000';
@@ -145,5 +145,13 @@ export const deleteProject = async (id: string, token: string) => {
     console.log('Project deleted successfully:', id);
   } catch (error) {
     throw error;
+  }
+}
+export const updateProject = async (projectId: string, form: Partial<ProjectForm>) => {
+  try {
+    const ref = doc(db, 'projects', projectId)
+
+    await updateDoc(ref, form)
+  } catch (error) {
   }
 }

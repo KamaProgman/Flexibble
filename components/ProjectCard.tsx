@@ -25,7 +25,7 @@ const ProjectCard: React.FC<props> = ({ id, title, image, name, userId, avatarUr
   return (
     <div className='flexCenter flex-col rounded-2xl drop-shadow-card'>
       <Link href={`/project/${id}`} className='flexCenter group relative w-full h-full'>
-        <img
+        <Image
           src={image}
           width={414}
           height={314}
