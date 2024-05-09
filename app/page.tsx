@@ -2,8 +2,6 @@ import { ProjectInterface } from "@/common.types";
 import ProjectCard from "@/components/ProjectCard";
 import { getCollection } from "@/lib/actions";
 
-// ProjectIn
-
 const Home = async () => {
   const data = await getCollection<ProjectInterface>('projects')
 
@@ -32,7 +30,7 @@ const Home = async () => {
           />
         ))}
       </section>
-      <h1>LoadMore</h1>
+      <h1 className="mt-12">LoadMore</h1>
     </section>
   );
 }

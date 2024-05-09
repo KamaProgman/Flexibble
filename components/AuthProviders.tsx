@@ -1,10 +1,11 @@
 "use client"
 import { signIn } from "next-auth/react";
+import Button from "./Button";
 
 export const AuthProvider = () => {
   return (
     <>
-      <button onClick={() => signIn('google')}>Sign In</button>
+      <Button title="Sign In" handleClick={() => signIn('google')} />
     </>
   )
 }

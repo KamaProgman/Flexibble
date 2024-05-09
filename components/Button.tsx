@@ -3,11 +3,11 @@ import React, { MouseEventHandler } from 'react'
 
 interface props {
   title: string;
-  leftIcon?: string;
-  rightIcon?: string;
+  leftIcon?: string | null;
+  rightIcon?: string | null;
   handleClick?: MouseEventHandler;
-  isSubmitting: boolean;
-  type: 'button' | 'submit';
+  isSubmitting?: boolean | false;
+  type?: 'button' | 'submit';
   bgColor?: string;
   textColor?: string;
 }
