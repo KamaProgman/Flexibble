@@ -23,7 +23,6 @@ const Project: React.FC<params> = async ({ params: { id } }) => {
   }
 
   const renderLink = () => `/profile/${project?.createdBy.id}`
-
   return (
     <Modal>
       <section className='flexBetween gap-y-8 max-w-4xl max-xs:flex-xol w-full'>

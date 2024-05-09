@@ -59,6 +59,7 @@ export interface ProjectForm {
 	title: string;
 	description: string;
 	image: File | null | null;
+	imageUrl?: string;
 	liveSiteUrl: string;
 	githubUrl: string;
 	category: string;

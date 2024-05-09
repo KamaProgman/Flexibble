@@ -47,6 +47,7 @@ const ProjectForm: React.FC<props> = ({ type, session, project }) => {
     reader.readAsDataURL(file);
     reader.onload = () => {
       const result = reader.result as string;
+
       setForm((prevState) => ({ ...prevState, image: file, imageUrl: result }))
     };
   }
@@ -61,7 +62,7 @@ const ProjectForm: React.FC<props> = ({ type, session, project }) => {
         await createNewProject(form, session.user)
         router.push('/')
       }
-        // edit project 
+      // edit project 
       if (project && type === "edit") {
         await updateProject(project?.id, form)
       }
@@ -69,6 +70,7 @@ const ProjectForm: React.FC<props> = ({ type, session, project }) => {
       console.log(error);
     } finally {
       setIsSubmitting(false)
+      window.location.reload()
     }
   }
 

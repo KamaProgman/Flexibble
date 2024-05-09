@@ -5,7 +5,6 @@ import { SessionInterface } from "@/common.types";
 import { createUser, getUser } from "./actions";
 import jsonwebtoken from 'jsonwebtoken'
 import { JWT } from "next-auth/jwt";
-import { log } from "console";
 
 export const authOptions: NextAuthOptions = {
   providers: [

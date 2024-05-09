@@ -14,7 +14,6 @@ type params = {
 
 const EditProject: React.FC<params> = async ({ params: { id } }) => {
   let session = await getCurrentUser()
-
   if (!session?.user) redirect('/')
 
   const result = await getProjectDetails(id) as ProjectInterface
@@ -22,7 +21,6 @@ const EditProject: React.FC<params> = async ({ params: { id } }) => {
   return (
     <Modal >
       <h3 className='modal-head-text'>Edit Project</h3>
-
       <ProjectForm type="edit" session={session} project={result} />
     </Modal>
   )

@@ -4,7 +4,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where, updateDoc } from "@firebase/firestore";
 import { User } from "next-auth";
 
-const serverUrl = 'http://localhost:3000';
+const serverUrl = 'http://localhost:3000' || process.env.NEXT_PUBLIC_SERVER_URL;
 
 export const fetchToken = async () => {
   try {
@@ -52,6 +52,7 @@ export const getUser = async (email: string) => {
     throw error;
   }
 };
+
 export const createUser = async (user: User) => {
   try {
     const usersCollectionRef = collection(db, "users");
@@ -69,6 +70,7 @@ export const createUser = async (user: User) => {
     console.error('Error creating user:', error);
   }
 }
+
 export const uploadImage = async (imageFile: File) => {
   try {
     const imageRef = ref(storage, `images/${imageFile.name}`)
@@ -81,6 +83,7 @@ export const uploadImage = async (imageFile: File) => {
     throw error;
   }
 }
+
 export const createNewProject = async (form: ProjectForm, user: User) => {
   try {
     if (form.image) {
@@ -105,21 +108,6 @@ export const createNewProject = async (form: ProjectForm, user: User) => {
     throw error;
   }
 }
-export const getProjectDetails = async (id: string) => {
-  try {
-    const docRef = doc(db, "projects", id);
-    const snapshot = await getDoc(docRef);
-
-    if (snapshot.exists()) {
-      return { id, ...snapshot.data() }
-    } else {
-      console.log('No such document!');
-      return null
-    }
-  } catch (error) {
-    throw error;
-  }
-}
 
 export const getUserProjects = async (userId: string) => {
   try {
@@ -137,6 +125,22 @@ export const getUserProjects = async (userId: string) => {
   }
 }
 
+export const getProjectDetails = async (id: string) => {
+  try {
+    const docRef = doc(db, "projects", id);
+    const snapshot = await getDoc(docRef);
+
+    if (snapshot.exists()) {
+      return { id, ...snapshot.data() }
+    } else {
+      console.log('No such document!');
+      return null
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const deleteProject = async (id: string, token: string) => {
   try {
     const ref = doc(db, 'projects', id)
@@ -147,11 +151,30 @@ export const deleteProject = async (id: string, token: string) => {
     throw error;
   }
 }
-export const updateProject = async (projectId: string, form: Partial<ProjectForm>) => {
-  try {
-    const ref = doc(db, 'projects', projectId)
 
-    await updateDoc(ref, form)
+export const updateProject = async (projectId: string, form: Partial<ProjectForm>) => {
+  function isDataUrl(value: string) {
+    const dataUrlRegex = /^data:image\/([a-zA-Z]*);base64,/;
+
+    return dataUrlRegex.test(value);
+  }
+
+  try {
+    const ref = doc(db, 'projects', projectId);
+    const { image, ...formDataWithoutImage } = form;
+    let updatedForm = { ...formDataWithoutImage };
+
+    if (form.image && isDataUrl(form?.imageUrl as string)) {
+      const imageUrl = await uploadImage(form.image);
+      updatedForm = {
+        ...formDataWithoutImage,
+        imageUrl: imageUrl
+      };
+    }
+    await updateDoc(ref, updatedForm);
+    console.log('Project editted successfully!', projectId);
   } catch (error) {
+    console.error('Error updating project:', error);
+    throw error;
   }
 }
