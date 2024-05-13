@@ -48,7 +48,7 @@ const ProjectCard: React.FC<props> = ({ id, title, image, name, userId, avatarUr
               className='rounded-full'
               alt='Profile Image'
             />
-            <p>{name}</p>
+            <p>{name.split(' ')[0]}</p>
           </div>
         </Link>
 

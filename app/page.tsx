@@ -18,7 +18,9 @@ const Home: React.FC<props> = async ({ searchParams: { category } }) => {
     return (
       <div className="flexStart flex-col paddings">
         <Categories />
-        <p className="no-result-text text-center">No projects found, go create some</p>
+        <div className="min-h-[400px] flex md:items-start items-center">
+          <p className="no-result-text text-center text-xl">No projects found, go create some</p>
+        </div>
       </div>
     )
   }

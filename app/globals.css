@@ -136,7 +136,6 @@ body {
 /* Profile Menu */
 .profile_menu-items {
 	@apply flex-col absolute -right-4 mt-2 p-7 sm:min-w-[300px] min-w-max rounded-xl bg-white border border-nav-border shadow-menu;
-	box-shadow: 0 0 7px 1px #e2e2e2;
 }
 
 /* Profile Card */
