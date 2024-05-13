@@ -23,17 +23,17 @@ const ProjectCard: React.FC<props> = ({ id, title, image, name, userId, avatarUr
   }, []);
 
   return (
-    <div className='flexCenter flex-col rounded-2xl drop-shadow-card'>
+    <div className='flexCenter flex-col rounded-2xl drop-shadow-card duration-200 ease-in-out'>
       <Link href={`/project/${id}`} className='flexCenter group relative w-full h-full'>
         <Image
           src={image}
           width={414}
           height={314}
-          className='w-full h-full rounded-2xl'
+          className='w-full h-full rounded-2xl object-cover'
           alt='Project Image'
         />
 
-        <div className='hidden group-hover:flex profile_card-title '>
+        <div className='opacity-0 group-hover:opacity-100 profile_card-title'>
           <p className='w-full'>{title}</p>
         </div>
       </Link>

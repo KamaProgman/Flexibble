@@ -1,7 +1,7 @@
 import { ProjectForm, ProjectInterface } from "@/common.types"
 import { db, storage } from "@/firebase/firebase.config"
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where, updateDoc } from "@firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where, updateDoc, Query, DocumentData } from "@firebase/firestore";
 import { User } from "next-auth";
 
 const serverUrl = 'http://localhost:3000' || process.env.NEXT_PUBLIC_SERVER_URL;
@@ -17,19 +17,36 @@ export const fetchToken = async () => {
 };
 
 export async function getCollection<T>(collectioName: string) {
-  let arr: T[] = []
   try {
-    let ref = query(collection(db, collectioName))
+    let ref = collection(db, collectioName)
     const snapshot = await getDocs(ref)
 
-    snapshot.forEach((doc) => {
-      arr.push({
-        id: doc.id,
-        ...doc.data()
-      } as T)
-    })
+    let arr: T[] = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }) as T)
 
     return arr
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getProjects(category: string | null = null) {
+  try {
+    let ref: Query<DocumentData> = collection(db, "projects")
+
+    if (category) {
+      ref = query(ref, where('category', '==', category))
+    }
+
+    const snapshot = await getDocs(ref)
+    let projects = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }) as ProjectInterface)
+
+    return projects
   } catch (error) {
     throw error;
   }
@@ -111,8 +128,8 @@ export const createNewProject = async (form: ProjectForm, user: User) => {
 
 export const getUserProjects = async (userId: string) => {
   try {
-    const ref = collection(db, 'projects')
-    const q = query(ref, where(`createdBy.id`, "==", userId))
+    const ref = collection(db, "projects")
+    const q = query(ref, where("createdBy.id", "==", userId))
     const snapshot = await getDocs(q)
     const projects = snapshot.docs.map(doc => ({
       id: doc.id,

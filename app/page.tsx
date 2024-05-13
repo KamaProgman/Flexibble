@@ -1,14 +1,23 @@
 import { ProjectInterface } from "@/common.types";
+import Categories from "@/components/Categories";
 import ProjectCard from "@/components/ProjectCard";
-import { getCollection } from "@/lib/actions";
+import { getProjects } from "@/lib/actions";
+import React from "react";
 
-const Home = async () => {
-  const data = await getCollection<ProjectInterface>('projects')
+type SearchParams = {
+  category?: string | null;
+}
+type props = {
+  searchParams: SearchParams
+}
+
+const Home: React.FC<props> = async ({ searchParams: { category } }) => {
+  const data = await getProjects(category)
 
   if (data.length === 0) {
     return (
       <div className="flexStart flex-col paddings">
-        Categories
+        <Categories />
         <p className="no-result-text text-center">No projects found, go create some</p>
       </div>
     )
@@ -16,7 +25,7 @@ const Home = async () => {
 
   return (
     <section className="flex flex-col paddings mb-16">
-      <h1>Categories</h1>
+      <Categories />
       <section className="projects-grid">
         {data?.map((project: ProjectInterface) => (
           <ProjectCard
@@ -30,7 +39,7 @@ const Home = async () => {
           />
         ))}
       </section>
-      <h1 className="mt-12">LoadMore</h1>
+
     </section>
   );
 }
